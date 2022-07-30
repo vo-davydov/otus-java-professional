@@ -54,7 +54,5 @@ public class ArrayListDemo {
         p.setName( "leon" );
 
         System.out.println( "New Cat :" + newCats.get( 0 ).toString() );
-
-
     }
 }
