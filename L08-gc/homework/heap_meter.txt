@@ -1,0 +1,17 @@
+m1 processor
+
+not optimized (the best is 2024 mb)
+xmx256m OutOfMemoryError
+xmx512m spend msec:5085, sec:5
+xmx1024m spend msec:4826, sec:4
+xmx1536m spend msec:4525, sec:4
+xmx1700m spend msec:3975, sec:3
+xmx2024m spend msec:3873, sec:3
+
+optimized (the best is 1024 mb)
+xmx256m spend msec:1956, sec:1
+xmx512m spend msec:1329, sec:1
+xmx1024m spend msec:1040, sec:1
+xmx1536m spend msec:1116, sec:1
+xmx1700m spend msec:1469, sec:1
+xmx2024m spend msec:1300, sec:1
