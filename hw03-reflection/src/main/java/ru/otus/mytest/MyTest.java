@@ -8,6 +8,7 @@ import ru.otus.mytest.utils.ReflectionHelper;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static ru.otus.mytest.utils.ReflectionHelper.callMethod;
@@ -24,26 +25,22 @@ public final class MyTest {
             Class<?> clazz = Class.forName(className);
             Map<Method, Boolean> tasks = new HashMap<>();
 
-            Object before = createNewByObject(clazz, null);
-            for (var m : clazz.getMethods()) {
-                if (hasBefore(m)) {
-                    runMethod(before, m.getName());
-                }
-            }
+            List<Method> beforeList = Arrays.stream(clazz.getMethods())
+                    .filter(MyTest::hasBefore).toList();
 
-            Object test = createNewByObject(clazz, before);
-            for (var m : clazz.getMethods()) {
-                if (hasTest(m)) {
-                    tasks.put(m, runMethod(test, m.getName()));
-                }
-            }
+            List<Method> afterList = Arrays.stream(clazz.getMethods())
+                    .filter(MyTest::hasAfter).toList();
 
-            Object after = createNewByObject(clazz, test);
-            for (var m : clazz.getMethods()) {
-                if (hasAfter(m)) {
-                    runMethod(after, m.getName());
-                }
-            }
+            Arrays.stream(clazz.getMethods())
+                    .filter(MyTest::hasTest)
+                    .forEach(tm -> {
+                        Object obj = createNewByObject(clazz, null);
+
+                        beforeList.forEach(bm -> runMethod(obj, bm.getName()));
+                        tasks.put(tm, runMethod(obj, tm.getName()));
+
+                        afterList.forEach(am -> runMethod(obj, am.getName()));
+                    });
 
             status(tasks);
         } catch (ClassNotFoundException e) {
@@ -82,15 +79,15 @@ public final class MyTest {
     }
 
     private static boolean hasBefore(Method method) {
-        return Arrays.stream(method.getAnnotations()).anyMatch(a -> a instanceof Before);
+        return method.isAnnotationPresent(Before.class);
     }
 
     private static boolean hasTest(Method method) {
-        return Arrays.stream(method.getAnnotations()).anyMatch(a -> a instanceof Test);
+        return method.isAnnotationPresent(Test.class);
     }
 
     private static boolean hasAfter(Method method) {
-        return Arrays.stream(method.getAnnotations()).anyMatch(a -> a instanceof After);
+        return method.isAnnotationPresent(After.class);
     }
 
     /**
