@@ -4,3 +4,5 @@ include 'hw03-reflection'
 include 'L04-generics'
 include 'L08-gc:demo'
 include 'L08-gc:homework'
+include 'hw06-solid'
+
