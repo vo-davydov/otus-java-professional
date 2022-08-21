@@ -4,6 +4,7 @@ import ru.otus.actions.AtmActions;
 import ru.otus.banknotes.Banknote;
 import ru.otus.banknotes.Denomination;
 import ru.otus.cassettes.Cassette;
+import ru.otus.cassettes.ClusterCassette;
 import ru.otus.exception.NotCorrectSumException;
 
 import java.util.ArrayList;
@@ -12,20 +13,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static ru.otus.Atm.Type.OPEN;
-import static ru.otus.Atm.Type.SBER;
-import static ru.otus.Atm.Type.TINK;
-import static ru.otus.banknotes.Banknote.eachOneOf;
-import static ru.otus.banknotes.Country.RUB;
-
 public class Atm implements AtmActions {
 
     private final Logger LOGGER = Logger.getLogger(Atm.class.getName());
-    private final Map<Denomination, Cassette> cassettes;
+    private final ClusterCassette cluster;
     private final String name;
 
+    private final Type type;
+
     private Atm(Builder builder) {
-        this.cassettes = builder.cassettes;
+        this.cluster = builder.cluster;
+        this.type = builder.type;
         this.name = builder.name;
     }
 
@@ -40,7 +38,7 @@ public class Atm implements AtmActions {
         }
 
         for (var b : map.entrySet()) {
-            Cassette c = cassettes.get(b.getKey());
+            Cassette c = cluster.get(b.getKey());
             c.put(b.getValue());
         }
     }
@@ -52,22 +50,12 @@ public class Atm implements AtmActions {
 
 
     private Cassette getMinAvailableCassette() {
-        int min = Integer.MAX_VALUE;
-        Denomination den = null;
-        for (var c : cassettes.entrySet()) {
-            int value = c.getValue().getDenominationValue();
-            if (min > value) {
-                min = value;
-                den = c.getKey();
-            }
-        }
-
-        return cassettes.get(den);
+        return cluster.getMinCassette();
     }
 
     private int calcTotalBalance() {
         int sum = 0;
-        for (var c : cassettes.entrySet()) {
+        for (var c : cluster.getEntry()) {
             sum += c.getValue().sum();
         }
         return sum;
@@ -76,47 +64,6 @@ public class Atm implements AtmActions {
     @Override
     public void show() {
         LOGGER.info(String.valueOf(calcTotalBalance()));
-    }
-
-    public static Atm atmOf(Type type) {
-        switch (type) {
-            case SBER -> {
-                Builder ab = new Builder(SBER.name);
-                for (Banknote b : eachOneOf(RUB)) {
-                    Cassette.Builder cb = new Cassette.Builder(b);
-                    cb.capacity(2_000_000);
-
-                    ab.addCassette(cb.build());
-                }
-
-                return ab.build();
-            }
-            case OPEN -> {
-                Builder ab = new Builder(OPEN.name);
-                for (Banknote b : eachOneOf(RUB)) {
-                    Cassette.Builder cb = new Cassette.Builder(b);
-                    cb.capacity(1_000_000);
-
-                    ab.addCassette(cb.build());
-                }
-
-                return ab.build();
-            }
-            case TINK -> {
-                Builder ab = new Builder(TINK.name);
-                for (Banknote b : eachOneOf(RUB)) {
-                    Cassette.Builder cb = new Cassette.Builder(b);
-                    cb.capacity(1_500_000);
-
-                    ab.addCassette(cb.build());
-                }
-
-                return ab.build();
-            }
-            default -> {
-                return null;
-            }
-        }
     }
 
     @Override
@@ -141,21 +88,23 @@ public class Atm implements AtmActions {
         }
     }
 
-    private static class Builder {
-        private final String name;
-        private Map<Denomination, Cassette> cassettes;
+    public static class Builder {
+
+        private String name;
+        private Type type;
+        private ClusterCassette cluster = new ClusterCassette();
 
         public Builder(String name) {
             this.name = name;
         }
 
+        public Builder type(Type type) {
+            this.type = type;
+            return this;
+        }
+
         public Builder addCassette(Cassette cassette) {
-            if (cassettes == null) {
-                this.cassettes = new HashMap<>();
-            }
-
-            cassettes.put(cassette.getDenomination(), cassette);
-
+            cluster.put(cassette);
             return this;
         }
 
