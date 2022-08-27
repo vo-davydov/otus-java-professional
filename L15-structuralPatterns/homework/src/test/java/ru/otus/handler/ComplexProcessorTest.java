@@ -3,16 +3,16 @@ package ru.otus.handler;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.otus.model.Message;
 import ru.otus.listener.Listener;
+import ru.otus.model.Message;
 import ru.otus.processor.Processor;
+import ru.otus.processor.homework.ProcessorChangeField11On12;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -93,6 +93,35 @@ class ComplexProcessorTest {
 
         //then
         verify(listener, times(1)).onUpdated(message);
+    }
+
+    @Test
+    @DisplayName("Тестируем смену полей")
+    void handleChangeProcessorsTest() {
+        //given
+        var message = new Message.Builder(1L)
+                .field7("field7")
+                .field11("field11")
+                .field12("field12")
+                .build();
+
+        var processor1 = mock(Processor.class);
+        when(processor1.process(message)).thenReturn(message);
+
+        var processor2 = mock(Processor.class);
+        when(processor2.process(message)).thenReturn(message);
+
+        var changeProcessor = new ProcessorChangeField11On12();
+
+        var processors = List.of(processor1, processor2, changeProcessor);
+
+        var complexProcessor = new ComplexProcessor(processors, (ex) -> {
+        });
+
+        var newMessage = complexProcessor.handle(message);
+
+        assertThat(newMessage.getField11()).isEqualTo("field12");
+        assertThat(newMessage.getField12()).isEqualTo("field11");
     }
 
     private static class TestException extends RuntimeException {
