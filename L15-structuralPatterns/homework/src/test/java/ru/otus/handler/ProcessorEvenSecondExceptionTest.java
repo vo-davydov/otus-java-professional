@@ -6,9 +6,7 @@ import ru.otus.model.Message;
 import ru.otus.processor.homework.EvenSecondException;
 import ru.otus.processor.homework.ProcessorEvenSecondException;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -17,14 +15,9 @@ public class ProcessorEvenSecondExceptionTest {
     @Test
     @DisplayName("Тестируем ежесекундный процессор")
     void handleSecondsProcessorsTest() {
-        //given
         var message = new Message.Builder(1L).field7("field7").build();
 
-        Instant instant = Instant.now(Clock.fixed(
-                Instant.parse("2018-08-22T10:00:00Z"),
-                ZoneOffset.UTC));
-
-        var secondsProcessor = new ProcessorEvenSecondException(instant);
+        var secondsProcessor = new ProcessorEvenSecondException(() -> LocalDateTime.of(1999, 1, 1, 1, 1, 2));
 
         assertThatExceptionOfType(EvenSecondException.class).isThrownBy(() -> secondsProcessor.process(message));
 

@@ -3,14 +3,12 @@ package ru.otus.processor.homework;
 import ru.otus.model.Message;
 import ru.otus.processor.Processor;
 
-import java.time.Instant;
-
 public class ProcessorEvenSecondException implements Processor {
 
-    private final Instant instant;
+    private final DateTimeProvider dateTimeProvider;
 
-    public ProcessorEvenSecondException(Instant instant) {
-        this.instant = instant;
+    public ProcessorEvenSecondException(DateTimeProvider dateTimeProvider) {
+        this.dateTimeProvider = dateTimeProvider;
     }
 
     @Override
@@ -24,7 +22,8 @@ public class ProcessorEvenSecondException implements Processor {
     }
 
     private boolean isEvenSecond() {
-        return instant.getEpochSecond() % 2 == 0;
+        var date = dateTimeProvider.getDate();
+        return date.getSecond() % 2 == 0;
     }
 
 }
