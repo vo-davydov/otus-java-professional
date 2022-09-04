@@ -8,4 +8,5 @@ include 'hw05-aop'
 include 'hw06-solid'
 include 'L15-structuralPatterns:demo'
 include 'L15-structuralPatterns:homework'
+include 'hw08-io'
 
