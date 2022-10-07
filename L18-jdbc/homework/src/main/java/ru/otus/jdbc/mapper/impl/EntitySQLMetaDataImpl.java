@@ -9,44 +9,53 @@ import java.util.stream.Collectors;
 
 public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
 
-    private final EntityClassMetaData entityClassMetaData;
+    private final String tableName;
+    private final String id;
+    private final String fieldsWithoutId;
+    private final String fieldsWithQuestion;
+    private final String fieldsQuestion;
 
-    public EntitySQLMetaDataImpl(EntityClassMetaData entityClassMetaData) {
-        this.entityClassMetaData = entityClassMetaData;
+
+    public <T> EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaData) {
+        this.tableName = getTableName(entityClassMetaData);
+        this.id = getIdField(entityClassMetaData);
+        this.fieldsWithoutId = getFieldsWithoutId(entityClassMetaData);
+        this.fieldsWithQuestion = getFieldsWithQuestion(entityClassMetaData);
+        this.fieldsQuestion = getFieldsQuestion(entityClassMetaData);
     }
 
     @Override
     public String getSelectAllSql() {
-        return "SELECT * FROM " + getTableName();
+        return "SELECT * FROM " + tableName;
     }
 
     @Override
     public String getSelectByIdSql() {
-        return "SELECT * FROM " + getTableName() + " WHERE " + entityClassMetaData.getIdField().getName() + " = ?";
+        return "SELECT * FROM " + tableName + " WHERE " + id + " = ?";
     }
 
     @Override
     public String getInsertSql() {
-        return "INSERT INTO " + getTableName() +
-                " ( " + getFieldsWithoutId() + " ) " +
-                " VALUES ( " + getFieldsQuestion() + " )";
+        return "INSERT INTO " + tableName +
+                " ( " + fieldsWithoutId + " ) " +
+                " VALUES ( " + fieldsQuestion + " )";
     }
 
     @Override
     public String getUpdateSql() {
-        return "UPDATE " + getTableName() + " SET " + getFieldsWithQuestion()
-                + " WHERE " + entityClassMetaData.getIdField().getName() + " = ?";
+        return "UPDATE " + tableName + " SET " + fieldsWithQuestion
+                + " WHERE " + id + " = ?";
     }
 
 
-    private String getFieldsWithoutId() {
+    private <T> String getFieldsWithoutId(EntityClassMetaData<T> entityClassMetaData) {
         List<Field> fields = entityClassMetaData.getFieldsWithoutId();
         return fields.stream()
                 .map(field -> field.getName().toLowerCase())
                 .collect(Collectors.joining(", "));
     }
 
-    private String getFieldsQuestion() {
+    private <T> String getFieldsQuestion(EntityClassMetaData<T> entityClassMetaData) {
         StringBuilder result = new StringBuilder();
         int size = entityClassMetaData.getFieldsWithoutId().size();
         for (int i = 0; i < size; i++) {
@@ -60,19 +69,18 @@ public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
         return result.toString();
     }
 
-    private String getFieldsWithQuestion() {
+    private <T> String getFieldsWithQuestion(EntityClassMetaData<T> entityClassMetaData) {
         List<Field> fields = entityClassMetaData.getFieldsWithoutId();
         return fields.stream()
                 .map(field -> field.getName().toLowerCase() + " = ?")
                 .collect(Collectors.joining(", "));
     }
 
-    private String getTableName() {
-        return entityClassMetaData.getName().toLowerCase();
+    private <T> String getTableName(EntityClassMetaData<T> getEntityClassMetaData) {
+        return getEntityClassMetaData.getName().toLowerCase();
     }
 
-    public EntityClassMetaData getEntityClassMetaData() {
-        return entityClassMetaData;
+    private <T> String getIdField(EntityClassMetaData<T> entityClassMetaData) {
+        return entityClassMetaData.getIdField().getName();
     }
-
 }

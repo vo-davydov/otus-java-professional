@@ -22,7 +22,6 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
 
     private final DbExecutor dbExecutor;
     private final EntitySQLMetaData entitySQLMetaData;
-
     private final EntityClassMetaData<T> entityClassMetaData;
 
     public DataTemplateJdbc(DbExecutor dbExecutor, EntitySQLMetaData entitySQLMetaData, EntityClassMetaData<T> entityClassMetaData) {
@@ -97,7 +96,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             }
             return t;
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new DataTemplateException(e);
         }
     }
 
@@ -109,7 +108,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
                 f.setAccessible(true);
                 result.add(f.get(client));
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw new DataTemplateException(e);
             }
         }
 
@@ -124,7 +123,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             idField.setAccessible(true);
             result.add(idField.get(client));
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new DataTemplateException(e);
         }
 
         return result;
