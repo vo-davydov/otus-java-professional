@@ -11,4 +11,5 @@ include 'L15-structuralPatterns:homework'
 include 'hw08-io'
 include 'L18-jdbc:demo'
 include 'L18-jdbc:homework'
-
+include 'L21-jpql:class-demo'
+include 'L21-jpql:homework-template'
