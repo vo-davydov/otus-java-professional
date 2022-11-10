@@ -7,6 +7,11 @@ import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.otus.core.cache.Cache;
+import ru.otus.core.cache.Listener;
+import ru.otus.core.cache.MyCache;
 import ru.otus.core.repository.DataTemplateHibernate;
 import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
@@ -25,6 +30,10 @@ public abstract class AbstractHibernateTest {
     protected TransactionManagerHibernate transactionManager;
     protected DataTemplateHibernate<Client> clientTemplate;
     protected DBServiceClient dbServiceClient;
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractHibernateTest.class);
+
+    protected Cache cache;
 
     private static TestContainersConfig.CustomPostgreSQLContainer CONTAINER;
 
@@ -57,7 +66,14 @@ public abstract class AbstractHibernateTest {
 
         transactionManager = new TransactionManagerHibernate(sessionFactory);
         clientTemplate = new DataTemplateHibernate<>(Client.class);
-        dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
+        cache = new MyCache<Long, Client>();
+        cache.addListener( new Listener<String, Integer>() {
+            @Override
+            public void notify(String key, Integer value, String action) {
+                LOGGER.info("key:{}, value:{}, action: {}", key, value, action);
+            }
+        });
+        dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, cache);
     }
 
     protected EntityStatistics getUsageStatistics() {
