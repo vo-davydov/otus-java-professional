@@ -34,22 +34,30 @@ public class DbServiceClientImpl implements DBServiceClient {
             }
             clientDataTemplate.update(session, clientCloned);
             log.info("updated client: {}", clientCloned);
-            cache.put(clientCloned.getId(), clientCloned);
             return clientCloned;
         });
 
-        cache.put(c.getId(), c);
-        return client;
+        putCached(c);
+        return c;
     }
 
     @Override
     public Optional<Client> getClient(long id) {
-        return Optional.of(cache.get(id)).or(() ->
-                transactionManager.doInReadOnlyTransaction(session -> {
-                    var clientOptional = clientDataTemplate.findById(session, id);
-                    log.info("client: {}", clientOptional);
-                    return clientOptional;
-                }));
+        var cachedClient = getCached(id);
+
+        if (cachedClient.isPresent()) {
+            return cachedClient;
+        }
+
+        var client = transactionManager.doInReadOnlyTransaction(session -> {
+            var clientOptional = clientDataTemplate.findById(session, id);
+            log.info("client: {}", clientOptional);
+            return clientOptional;
+        });
+
+        client.ifPresent(this::putCached);
+
+        return client;
     }
 
     @Override
@@ -60,10 +68,16 @@ public class DbServiceClientImpl implements DBServiceClient {
             return clientList;
         });
 
-        for (var client : clients) {
-            cache.put(client.getId(), client);
-        }
+        clients.forEach(this::putCached);
 
         return clients;
+    }
+
+    private Optional<Client> getCached(long id) {
+        return Optional.ofNullable(cache.get(id));
+    }
+
+    private void putCached(Client client) {
+        cache.put(client.getId(), client);
     }
 }
