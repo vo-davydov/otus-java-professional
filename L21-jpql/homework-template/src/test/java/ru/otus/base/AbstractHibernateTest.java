@@ -20,7 +20,9 @@ import ru.otus.crm.model.Address;
 import ru.otus.crm.model.Client;
 import ru.otus.crm.model.Phone;
 import ru.otus.crm.service.DBServiceClient;
+import ru.otus.crm.service.DbService;
 import ru.otus.crm.service.DbServiceClientImpl;
+import ru.otus.crm.service.DbServiceImpl;
 
 import static ru.otus.demo.DbServiceDemo.HIBERNATE_CFG_FILE;
 
@@ -34,6 +36,8 @@ public abstract class AbstractHibernateTest {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractHibernateTest.class);
 
     protected Cache cache;
+
+    protected DbService<Client> dbService;
 
     private static TestContainersConfig.CustomPostgreSQLContainer CONTAINER;
 
@@ -73,7 +77,8 @@ public abstract class AbstractHibernateTest {
                 LOGGER.info("key:{}, value:{}, action: {}", key, value, action);
             }
         });
-        dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, cache);
+        dbService = new DbServiceImpl<>(transactionManager, clientTemplate);
+        dbServiceClient = new DbServiceClientImpl(dbService);
     }
 
     protected EntityStatistics getUsageStatistics() {

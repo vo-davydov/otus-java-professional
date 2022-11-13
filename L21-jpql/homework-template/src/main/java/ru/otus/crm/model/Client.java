@@ -14,7 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "client")
-public class Client implements Cloneable {
+public class Client implements AbstractEntity<Client> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

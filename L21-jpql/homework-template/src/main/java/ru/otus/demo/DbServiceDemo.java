@@ -12,6 +12,7 @@ import ru.otus.crm.model.Address;
 import ru.otus.crm.model.Client;
 import ru.otus.crm.model.Phone;
 import ru.otus.crm.service.DbServiceClientImpl;
+import ru.otus.crm.service.DbServiceImpl;
 
 public class DbServiceDemo {
 
@@ -36,7 +37,8 @@ public class DbServiceDemo {
 
         var cache = new MyCache<Long, Client>();
 ///
-        var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, cache);
+        var dbService = new DbServiceImpl<>(transactionManager, clientTemplate);
+        var dbServiceClient = new DbServiceClientImpl(dbService);
         dbServiceClient.saveClient(new Client("dbServiceFirst"));
 
         var clientSecond = dbServiceClient.saveClient(new Client("dbServiceSecond"));

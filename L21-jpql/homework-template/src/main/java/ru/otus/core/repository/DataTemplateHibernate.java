@@ -1,11 +1,12 @@
 package ru.otus.core.repository;
 
 import org.hibernate.Session;
+import ru.otus.crm.model.AbstractEntity;
 
 import java.util.List;
 import java.util.Optional;
 
-public class DataTemplateHibernate<T> implements DataTemplate<T> {
+public class DataTemplateHibernate<T extends AbstractEntity> implements DataTemplate<T> {
 
     private final Class<T> clazz;
 
