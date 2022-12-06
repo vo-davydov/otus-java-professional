@@ -4,18 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class HWCacheDemo {
-    private static final Logger logger = LoggerFactory.getLogger(HWCacheDemo.class);
+public class CacheDemo {
+    private static final Logger logger = LoggerFactory.getLogger(CacheDemo.class);
 
     public static void main(String[] args) {
-        new HWCacheDemo().demo();
+        new CacheDemo().demo();
     }
 
     private void demo() {
-        HwCache<String, Integer> cache = new MyCache<>();
+        Cache<String, Integer> cache = new MyCache<>();
 
         // пример, когда Idea предлагает упростить код, при этом может появиться "спец"-эффект
-        HwListener<String, Integer> listener = new HwListener<String, Integer>() {
+        Listener<String, Integer> listener = new Listener<String, Integer>() {
             @Override
             public void notify(String key, Integer value, String action) {
                 logger.info("key:{}, value:{}, action: {}", key, value, action);
