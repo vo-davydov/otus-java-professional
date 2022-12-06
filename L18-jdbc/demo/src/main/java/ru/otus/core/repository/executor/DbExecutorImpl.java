@@ -41,4 +41,15 @@ public class DbExecutorImpl implements DbExecutor {
             throw new DataBaseOperationException("executeSelect error", ex);
         }
     }
+
+    @Override
+    public <T> List<T> executeSelect(Connection connection, String sql, Function<ResultSet, List<T>> rsHandler) {
+        try (var pst = connection.prepareStatement(sql)) {
+            try (var rs = pst.executeQuery()) {
+                return rsHandler.apply(rs);
+            }
+        } catch (SQLException ex) {
+            throw new DataBaseOperationException("executeSelect error", ex);
+        }
+    }
 }
