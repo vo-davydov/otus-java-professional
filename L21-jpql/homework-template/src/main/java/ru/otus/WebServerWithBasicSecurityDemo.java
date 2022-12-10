@@ -37,7 +37,6 @@ public class WebServerWithBasicSecurityDemo {
 
         String hashLoginServiceConfigPath = FileSystemHelper.localFileNameOrResourceNameToFullPath(HASH_LOGIN_SERVICE_CONFIG_NAME);
         LoginService loginService = new HashLoginService(REALM_NAME, hashLoginServiceConfigPath);
-        //LoginService loginService = new InMemoryLoginServiceImpl(userDao);
 
         UsersWebServer usersWebServer = new UsersWebServerWithBasicSecurity(WEB_SERVER_PORT,
                 loginService, userDao, gson, templateProcessor);
