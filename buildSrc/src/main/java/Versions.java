@@ -28,4 +28,6 @@ public interface Versions {
     String tomcatAnnotationsApi = "6.0.53";
 
     String kafkaClients = "3.0.0";
+
+    String springBootVersion = "3.0.0";
 }
