@@ -15,4 +15,5 @@ include 'L21-jpql:class-demo'
 include 'L21-jpql:homework-template'
 include 'hw14-SpringDataJdbc'
 include 'hw13-IoC'
+include 'hw15-Executors'
 
