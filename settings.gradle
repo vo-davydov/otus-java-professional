@@ -16,4 +16,6 @@ include 'L21-jpql:homework-template'
 include 'hw14-SpringDataJdbc'
 include 'hw13-IoC'
 include 'hw15-Executors'
+include 'L33-concurrentCollections:concurrentCollections'
+include 'L33-concurrentCollections:QueueDemo'
 

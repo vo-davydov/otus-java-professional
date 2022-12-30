@@ -1,5 +1,6 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Пользователи</title>
     <script>
         function getUserById() {
@@ -33,11 +34,11 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>${randomUser.id}</td>
-            <td>${randomUser.name}</td>
-            <td>${randomUser.login}</td>
-            <td>${randomUser.password}</td>
+    <tr>
+        <td th:text="${user.id}"/>
+        <td th:text="${user.name}"/>
+        <td th:text="${user.login}"/>
+        <td th:text="${user.password}"/>
         </tr>
     </tbody>
 </table>
