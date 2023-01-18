@@ -3,45 +3,42 @@ package ru.otus.protobuf.client;
 import io.grpc.stub.StreamObserver;
 import ru.otus.protobuf.generated.CountMessage;
 
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Logger;
 
 public class ClientStreamObserver implements StreamObserver<CountMessage> {
 
     private final Logger logger = Logger.getLogger(ClientStreamObserver.class.getSimpleName());
 
-    private final ConcurrentLinkedDeque<Long> concurrentLinkedDeque;
+    private long lastValue;
 
     public ClientStreamObserver() {
-        this.concurrentLinkedDeque = new ConcurrentLinkedDeque<>();
+
     }
 
     @Override
     public void onNext(CountMessage value) {
-        concurrentLinkedDeque.add(value.getCurrentValue());
-        logger.info("New value:" + value.getCurrentValue());
+        logger.info(String.format("New value: %s", value.getCurrentValue()));
+        setLastValue(value.getCurrentValue());
     }
 
     @Override
     public void onError(Throwable t) {
         logger.info(t.getMessage());
-        concurrentLinkedDeque.clear();
     }
 
     @Override
     public void onCompleted() {
         logger.info("Completed!");
-        concurrentLinkedDeque.clear();
     }
 
-    public long getFirstOrZero() {
-        var result = 0L;
-
-        if (!concurrentLinkedDeque.isEmpty()) {
-            result = concurrentLinkedDeque.getFirst();
-        }
-        concurrentLinkedDeque.clear();
-
-        return result;
+    private synchronized void setLastValue(long value) {
+        this.lastValue = value;
     }
+
+    public synchronized long getLastValueAndReset() {
+       var lastValuePrev = this.lastValue;
+       this.lastValue = 0;
+       return lastValuePrev;
+    }
+
 }

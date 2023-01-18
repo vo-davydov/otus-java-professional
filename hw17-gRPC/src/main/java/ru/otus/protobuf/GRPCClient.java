@@ -34,9 +34,8 @@ public class GRPCClient {
         stub.pushValue(firstMessage, clientStreamObserver);
 
         var currentValue = 0L;
-
         for (int i = 0; i < 50; i++) {
-            currentValue = currentValue + clientStreamObserver.getFirstOrZero() + 1;
+            currentValue = currentValue + clientStreamObserver.getLastValueAndReset() + 1;
             logger.info("Current value is: " + (currentValue));
             sleep();
         }

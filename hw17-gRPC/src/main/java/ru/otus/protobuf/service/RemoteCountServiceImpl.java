@@ -12,10 +12,11 @@ public class RemoteCountServiceImpl extends RemoteCountServiceGrpc.RemoteCountSe
 
     @Override
     public void pushValue(CountMessage request, StreamObserver<CountMessage> responseObserver) {
+        logger.info(String.format("First value is: %s. Last value is: $s", request.getFirstValue(), request.getLastValue()));
 
         for (long i = request.getFirstValue(); i < request.getLastValue() + 1; i++) {
             responseObserver.onNext(buildCountMessage(i, request));
-            logger.info("Current value: " + i);
+            logger.info(String.format("Current value: %s", i));
             sleep();
         }
 
