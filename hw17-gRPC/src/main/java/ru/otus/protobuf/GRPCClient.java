@@ -36,7 +36,7 @@ public class GRPCClient {
         var currentValue = 0L;
         for (int i = 0; i < 50; i++) {
             currentValue = currentValue + clientStreamObserver.getLastValueAndReset() + 1;
-            logger.info("Current value is: " + (currentValue));
+            logger.info(String.format("Current value is: %s", (currentValue)));
             sleep();
         }
 
