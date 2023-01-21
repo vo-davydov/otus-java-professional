@@ -20,3 +20,5 @@ include 'L33-concurrentCollections:concurrentCollections'
 include 'L33-concurrentCollections:QueueDemo'
 include 'hw17-gRPC'
 
+include 'L38-webflux-chat:client-service'
+include 'L38-webflux-chat:datastore-service'
