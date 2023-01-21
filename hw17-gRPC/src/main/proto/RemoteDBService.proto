@@ -4,15 +4,14 @@ package ru.otus.protobuf.generated;
 
 option java_multiple_files = true;
 
-message UserMessage {
-    int64 id = 1;
-    string firstName = 2;
-    string lastName = 3;
+message CountMessage {
+    int64 firstValue = 1;
+    int64 lastValue = 2;
+    int64 currentValue = 3;
 }
 
 message Empty {}
 
-service RemoteDBService {
-    rpc saveUser(UserMessage) returns (UserMessage);
-    rpc findAllUsers(Empty) returns (stream UserMessage);
+service RemoteCountService {
+    rpc pushValue(CountMessage) returns (stream CountMessage);
 }
