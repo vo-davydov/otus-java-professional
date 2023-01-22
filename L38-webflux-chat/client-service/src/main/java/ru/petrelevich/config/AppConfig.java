@@ -2,8 +2,10 @@ package ru.petrelevich.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.nio.NioEventLoopGroup;
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +35,7 @@ public class AppConfig {
         var eventLoopGroup = new NioEventLoopGroup(THREAD_POOL_SIZE,
                 new ThreadFactory() {
                     private final AtomicLong threadIdGenerator = new AtomicLong(0);
+
                     @Override
                     public Thread newThread(@Nullable Runnable task) {
                         var thread = new Thread(task);
@@ -41,7 +44,7 @@ public class AppConfig {
                     }
                 });
 
-        var resourceFactory= new ReactorResourceFactory();
+        var resourceFactory = new ReactorResourceFactory();
         resourceFactory.setLoopResources(b -> eventLoopGroup);
         resourceFactory.setUseGlobalResources(false);
         return resourceFactory;

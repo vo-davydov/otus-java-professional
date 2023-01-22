@@ -30,6 +30,10 @@ public class DataController {
     @PostMapping(value = "/msg/{roomId}")
     public Mono<Long> messageFromChat(@PathVariable("roomId") String roomId,
                                       @RequestBody MessageDto messageDto) {
+        if (Long.parseLong(roomId) == 1408L) {
+            return Mono.just(null);
+        }
+
         var messageStr = messageDto.messageStr();
 
         var msgId = Mono.just(new Message(roomId, messageStr))
@@ -48,7 +52,13 @@ public class DataController {
     public Flux<MessageDto> getMessagesByRoomId(@PathVariable("roomId") String roomId) {
         return Mono.just(roomId)
                 .doOnNext(room -> log.info("getMessagesByRoomId, room:{}", room))
-                .flatMapMany(dataStore::loadMessages)
+                .flatMapMany((room) -> {
+                    if (Long.parseLong(roomId) == 1408L) {
+                        return dataStore.loadAllMessages();
+                    } else {
+                        return dataStore.loadMessages(roomId);
+                    }
+                })
                 .map(message -> new MessageDto(message.getMsgText()))
                 .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
                 .subscribeOn(workerPool);
